@@ -1,0 +1,259 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+/*
+ * Majestic Horizon brand kit, staged as a color-block story.
+ * web-3: same styles as fundacion-cielo-html-v2 (review fixes + video hero). Fonts come from next/font.
+ * Allowed text pairs: Kuroi/Silk, Megadrive/Silk, Silk/Kuroi, Truesky/Kuroi, Silk/Megadrive.
+ * Never: Kuroi on Megadrive, Truesky as text on Silk.
+ * Shape rule for this version: everything is square (radius 0). Circles are for photo crops only.
+ */
+
+:root {
+  --silk: #f3f0ea;
+  --kuroi: #14151d;
+  --megadrive: #4a40ad;
+  --truesky: #99bbff;
+  /* Review C1: every tone lives here, nothing hard-coded below. */
+  --silk-raised: #ebe7df;
+  --kuroi-raised: #1d1e29;
+  --kuroi-deep: #0f1016;
+  --sky-night: #232a45;
+  --scrim: 20 21 29; /* Kuroi as RGB channels, for the photo scrims */
+
+  /* Horizonte */
+  --surface: var(--silk);
+  --surface-raised: var(--silk-raised);
+  --ink: var(--kuroi);
+  --ink-soft: color-mix(in srgb, var(--kuroi) 84%, var(--silk));
+  --line: color-mix(in srgb, var(--kuroi) 16%, var(--silk));
+  --action: var(--megadrive);
+  --on-action: var(--silk);
+  --emphasis: var(--megadrive);
+  --focus: var(--megadrive);
+  --night-raised: var(--kuroi);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Noche */
+    --surface: var(--kuroi);
+    --surface-raised: var(--kuroi-raised);
+    --ink: var(--silk);
+    --ink-soft: color-mix(in srgb, var(--silk) 86%, var(--kuroi));
+    --line: color-mix(in srgb, var(--silk) 16%, var(--kuroi));
+    --action: var(--truesky);
+    --on-action: var(--kuroi);
+    --emphasis: var(--truesky);
+    --focus: var(--truesky);
+    --night-raised: var(--kuroi-raised);
+  }
+}
+
+/*
+ * Color blocks. Each section declares one; the stage tweens the page
+ * background between them on scroll. Text, accent and button colors are
+ * always an approved pair for that block's background.
+ */
+.block-silk,
+.site-header[data-state="solid"] {
+  --block-bg: var(--silk);
+  --block-fg: var(--kuroi);
+  --block-soft: color-mix(in srgb, var(--kuroi) 84%, var(--silk));
+  --block-accent: var(--megadrive);
+  --btn-bg: var(--megadrive);
+  --btn-fg: var(--silk);
+  --block-line: color-mix(in srgb, var(--kuroi) 30%, var(--silk));
+}
+.block-sky {
+  --block-bg: var(--truesky);
+  --block-fg: var(--kuroi);
+  --block-soft: var(--kuroi);
+  /* Megadrive on Truesky is 4.15:1: large display type only. */
+  --block-accent: var(--megadrive);
+  --btn-bg: var(--kuroi);
+  --btn-fg: var(--silk);
+  --block-line: var(--kuroi);
+}
+.block-mega {
+  --block-bg: var(--megadrive);
+  --block-fg: var(--silk);
+  --block-soft: var(--silk);
+  --block-accent: var(--silk);
+  --btn-bg: var(--silk);
+  --btn-fg: var(--megadrive);
+  --block-line: var(--silk);
+}
+.block-night {
+  --block-bg: var(--kuroi);
+  --block-fg: var(--silk);
+  --block-soft: color-mix(in srgb, var(--silk) 86%, var(--kuroi));
+  --block-accent: var(--truesky);
+  --btn-bg: var(--truesky);
+  --btn-fg: var(--kuroi);
+  --block-line: color-mix(in srgb, var(--silk) 24%, var(--kuroi));
+}
+
+@media (prefers-color-scheme: dark) {
+  .block-silk,
+  .site-header[data-state="solid"] {
+    --block-bg: var(--kuroi);
+    --block-fg: var(--silk);
+    --block-soft: color-mix(in srgb, var(--silk) 86%, var(--kuroi));
+    --block-accent: var(--truesky);
+    --btn-bg: var(--truesky);
+    --btn-fg: var(--kuroi);
+    --block-line: color-mix(in srgb, var(--silk) 24%, var(--kuroi));
+  }
+  .block-sky {
+    --block-bg: var(--sky-night);
+    --block-fg: var(--silk);
+    --block-soft: color-mix(in srgb, var(--silk) 90%, var(--sky-night));
+    --block-accent: var(--truesky);
+    --btn-bg: var(--truesky);
+    --btn-fg: var(--kuroi);
+    --block-line: var(--truesky);
+  }
+  .block-night {
+    --block-bg: var(--kuroi-deep);
+  }
+}
+
+:is(.block-silk, .block-sky, .block-mega, .block-night) {
+  background-color: var(--block-bg);
+  color: var(--block-fg);
+}
+
+/* Header over the hero photo: transparent with a soft Kuroi scrim for legibility. */
+.site-header[data-state="top"],
+.site-header[data-state="hidden"] {
+  background: linear-gradient(to bottom, rgb(var(--scrim) / 0.6), rgb(var(--scrim) / 0));
+}
+.site-header[data-state="solid"] {
+  border-bottom: 1px solid var(--block-line);
+}
+/* The open mobile menu needs a solid header behind the logo. */
+.site-header:has([data-menu-button][aria-expanded="true"]) {
+  background: var(--block-bg);
+}
+
+/* Once the stage runs, sections go transparent and the body carries the color. */
+html.has-stage main > :is(.block-silk, .block-sky, .block-mega, .block-night) {
+  background-color: transparent;
+}
+
+/*
+ * Photo scrims. Review A1: the top band keeps the transparent header above 4.5:1.
+ * Review A2: on mobile the title sits higher, over the bright window, so the scrim climbs further.
+ * v-2: the video is brighter than the photo, so the desktop scrim gained a 60% stop (subtext at 1024x768).
+ */
+.scrim-top {
+  background: linear-gradient(to bottom, rgb(var(--scrim) / 0.8), rgb(var(--scrim) / 0));
+}
+.scrim-hero {
+  background: linear-gradient(
+    to top,
+    rgb(var(--scrim) / 0.92) 0%,
+    rgb(var(--scrim) / 0.8) 45%,
+    rgb(var(--scrim) / 0.6) 65%,
+    rgb(var(--scrim) / 0.2) 90%
+  );
+}
+@media (min-width: 768px) {
+  .scrim-hero {
+    background: linear-gradient(
+      to top,
+      rgb(var(--scrim) / 0.92) 0%,
+      rgb(var(--scrim) / 0.72) 38%,
+      rgb(var(--scrim) / 0.45) 60%,
+      rgb(var(--scrim) / 0.1) 85%
+    );
+  }
+}
+/* Darkest at the center, where the highlight sits. */
+.scrim-circle {
+  background: radial-gradient(circle, rgb(var(--scrim) / 0.82) 0%, rgb(var(--scrim) / 0.7) 55%, rgb(var(--scrim) / 0.45) 100%);
+}
+
+/* Review S2: the third card keeps a visible edge in the dark theme. */
+.card-night {
+  border-color: color-mix(in srgb, var(--silk) 30%, transparent);
+}
+
+/* Square button. Review T2: a visible hover tone that keeps the pair above 4.5:1. */
+.btn {
+  transition:
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 200ms ease-out;
+}
+.btn:hover {
+  background-color: color-mix(in srgb, var(--btn-bg) 88%, var(--btn-fg));
+}
+.btn:active {
+  transform: scale(0.98);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}
+
+/* Review L1: sticky stacks need room for a whole card under the header. */
+@custom-variant stack (@media (min-width: 768px) and (min-height: 720px));
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-action: var(--action);
+  --color-on-action: var(--on-action);
+  --color-emphasis: var(--emphasis);
+  --color-silk: var(--silk);
+  --color-kuroi: var(--kuroi);
+  --color-megadrive: var(--megadrive);
+  --color-truesky: var(--truesky);
+  --color-night-raised: var(--night-raised);
+  --color-block-fg: var(--block-fg);
+  --color-block-soft: var(--block-soft);
+  --color-block-accent: var(--block-accent);
+  --color-block-line: var(--block-line);
+  --color-btn-bg: var(--btn-bg);
+  --color-btn-fg: var(--btn-fg);
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display-face), var(--font-atkinson), ui-sans-serif, sans-serif;
+}
+
+html {
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+:is(.block-silk, .block-sky, .block-mega, .block-night) :focus-visible {
+  outline-color: var(--block-fg);
+}
+/* Review A4: sections that receive focus from the menu do not need a ring. */
+section[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Kinetic word wall: under reduced motion the rows wrap and stay still. */
+@media (prefers-reduced-motion: reduce) {
+  .word-row {
+    flex-wrap: wrap;
+    white-space: normal;
+    transform: none !important;
+  }
+  .word-dup {
+    display: none;
+  }
+}
